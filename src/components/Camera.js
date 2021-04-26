@@ -1,13 +1,14 @@
 import * as faceapi from "face-api.js";
-import {useEffect, useState} from "react";
+import React, {useEffect, useState} from "react";
 import "./Camera.css"
 import IsHappy from "./IsHappy"
 
 function Camera(){
     const [video, setvideo] =useState()
-    const [happy, setHappy] =useState()
+    const [emotion, setEmotion] =useState({happy:false, score:0.0})
     useEffect(()=>{
         setvideo(document.getElementById("video"))
+
     },[])
 
 
@@ -20,19 +21,20 @@ function Camera(){
         ]).then(startVideo)
     }
 
-    async function checkEmotion() {
-        const detections = await faceapi.detectSingleFace(video, new faceapi.TinyFaceDetectorOptions()).withFaceLandmarks().withFaceExpressions()
-        if (detections !== undefined) {
-            if (detections.expressions.happy > 0.50) {
-                if (!happy) {
-                    setHappy(true)
-                }
-            } else {
-                if (happy) {
-                    setHappy(false)
+    function checkEmotion() {
+        faceapi.detectSingleFace(video, new faceapi.TinyFaceDetectorOptions()).withFaceLandmarks().withFaceExpressions().then(detections =>{
+            if (detections !== undefined) {
+                if (detections.expressions.happy > 0.30) {
+                    if (!emotion.happy) {
+                        setEmotion({happy:true,score:detections.expressions.happy})
+                    }
+                } else {
+                    if (emotion.happy) {
+                        setEmotion({happy:false,score:detections.expressions.happy})
+                    }
                 }
             }
-        }
+        })
     }
 
     function startVideo() {
@@ -52,7 +54,7 @@ function Camera(){
             <video id={"video"} width="720" height="540" autoPlay muted style={{}}/>
             <br/>
             <button className={"btn btn-primary"} onClick={checkEmotion}>Check Emotion</button>
-            <IsHappy happy={happy}/>
+            <IsHappy emotion={emotion}/>
 
         </div>
     )
