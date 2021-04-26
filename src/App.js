@@ -37,6 +37,10 @@ function App() {
                                 style={{marginLeft: "2em"}}>
                             Clear Cookies
                         </button>
+                        <button className={"btn btn-primary"} onClick={() => setStartCam(!startCam)}
+                                style={{marginLeft: "2em"}}>
+                            Show Webcam
+                        </button>
                     </div>
                     <div className={"d-flex flex-column"}>
                         {userPlaylists.length > 0 ? (generatePlaylistsComponents(userPlaylists)) : null}
