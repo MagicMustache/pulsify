@@ -1,25 +1,45 @@
 import * as faceapi from "face-api.js";
-import React, {useEffect, useState} from "react";
+import React, {useEffect, useMemo, useState} from "react";
 import "./Camera.css"
 import IsHappy from "./IsHappy"
 
 function Camera() {
     const [video, setvideo] = useState()
     const [emotion, setEmotion] = useState({happy: false, score: 0.0})
+    const [loadedModels, setLoadedModels] = useState(false)
     useEffect(() => {
         setvideo(document.getElementById("video"))
+    }, [video])
 
-    }, [])
 
-
-    if (video != null) {
-        Promise.all([
-            faceapi.nets.tinyFaceDetector.loadFromUri('/models'),
-            faceapi.nets.faceLandmark68Net.loadFromUri('/models'),
-            faceapi.nets.faceRecognitionNet.loadFromUri('/models'),
-            faceapi.nets.faceExpressionNet.loadFromUri('/models')
-        ]).then(startVideo)
+    if(!loadedModels){
+        if (video != null) {
+            Promise.all([
+                faceapi.nets.tinyFaceDetector.loadFromUri('/models'),
+                faceapi.nets.faceLandmark68Net.loadFromUri('/models'),
+                faceapi.nets.faceRecognitionNet.loadFromUri('/models'),
+                faceapi.nets.faceExpressionNet.loadFromUri('/models')
+            ]).then(() => {
+                console.log("loaded models")
+                setLoadedModels(true)
+                startVideo()
+            })
+        }
     }
+    
+    const renderVideo = useMemo(() => (
+        <video id={"video"} width="720" height="540" autoPlay muted style={{}}/>
+    ), [])
+
+    return (
+        <div className="container-fluid">
+            {renderVideo}
+            <br/>
+            <button className={"btn btn-primary"} onClick={() => checkEmotion()}>Check Emotion</button>
+            <IsHappy emotion={emotion}/>
+
+        </div>
+    )
 
     function checkEmotion() {
         faceapi.detectSingleFace(video, new faceapi.TinyFaceDetectorOptions()).withFaceLandmarks().withFaceExpressions().then(detections => {
@@ -49,16 +69,7 @@ function Camera() {
                 });
         }
     }
-
-    return (
-        <div className="container-fluid">
-            <video id={"video"} width="720" height="540" autoPlay muted style={{}}/>
-            <br/>
-            <button className={"btn btn-primary"} onClick={checkEmotion}>Check Emotion</button>
-            <IsHappy emotion={emotion}/>
-
-        </div>
-    )
 }
+
 
 export default Camera

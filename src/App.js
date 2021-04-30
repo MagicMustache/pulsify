@@ -32,7 +32,7 @@ function App() {
             <div className={"container"} style={{}}>
                 <h1 className={"text-center"}>Pulsify</h1>
                 <div className={"d-flex flex-column"}>
-                    {startCam ? <Camera/> : null}
+                    {startCam ? (<Camera/>) : null}
                     <div className={"d-flex d-flex-column justify-content-center"}>
                         <h3>You are connected as "{userId}" on Spotify{"\n"}</h3>
                     </div>
