@@ -41,7 +41,7 @@ function App() {
                                 data-target="#playlistsModal">
                             Choose a playlist
                         </button>
-                        <button className={"btn btn-danger"} onClick={() => Cookies.remove("spotifyAuthToken")}
+                        <button className={"btn btn-danger"} onClick={() => clearCookies()}
                                 style={{marginLeft: "2em"}}>
                             Clear Cookies
                         </button>
@@ -91,12 +91,17 @@ function App() {
             <SpotifyAuth
                 redirectUri='http://localhost:3000'
                 clientID='dd7a0938872c4219b6b83bbe40cb5404'
+                showDialog={true}
                 scopes={[Scopes.userReadPrivate, Scopes.playlistReadPrivate, Scopes.playlistReadCollaborative,
                     Scopes.streaming, Scopes.userReadEmail, Scopes.userLibraryRead, Scopes.userLibraryModify, Scopes.userReadPlaybackState, Scopes.userModifyPlaybackState]}/>
         )
     }
 
 
+    function clearCookies(){
+        Cookies.remove("spotifyAuthToken")
+        window.location.reload()
+    }
     function getUserID() {
         Axios.get("https://api.spotify.com/v1/me", {
             headers: {

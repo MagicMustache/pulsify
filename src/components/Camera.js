@@ -26,7 +26,7 @@ function Camera() {
             })
         }
     }
-    
+
     const renderVideo = useMemo(() => (
         <video id={"video"} width="720" height="540" autoPlay muted style={{}}/>
     ), [])
