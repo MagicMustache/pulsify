@@ -92,6 +92,7 @@ function App() {
                 redirectUri='http://localhost:3000'
                 clientID='dd7a0938872c4219b6b83bbe40cb5404'
                 showDialog={true}
+                noLogo={true}
                 scopes={[Scopes.userReadPrivate, Scopes.playlistReadPrivate, Scopes.playlistReadCollaborative,
                     Scopes.streaming, Scopes.userReadEmail, Scopes.userLibraryRead, Scopes.userLibraryModify, Scopes.userReadPlaybackState, Scopes.userModifyPlaybackState]}/>
         )
