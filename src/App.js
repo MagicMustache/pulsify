@@ -15,6 +15,9 @@ function App() {
     const [userPlaylists, setPlaylists] = useState([])
     const [startCam, setStartCam] = useState(false)
     const [chosenPlaylist, setChosenPlaylist] = useState("")
+    const [bpm, setBpm] = useState(95)
+    const [tempos, setTempos] = useState({})
+    const [trackToPlay, setTrackToPlay] = useState("")
 
     const spotifyApi = new SpotifyWebApi();
 
@@ -22,12 +25,40 @@ function App() {
         getUserID()
     }, [])
 
+    useEffect(() => {
+        if (chosenPlaylist !== "") {
+            getTempos(chosenPlaylist)
+        }
+    }, [chosenPlaylist])
+
+    useEffect(() => {
+        if (chosenPlaylist !== "") {
+            chooseCorrectTrack()
+        }
+    }, [bpm])
+
     if (token) {
         spotifyApi.setAccessToken(token)
         if (chosenPlaylist !== "") {
             $("#playlistsModal").modal("hide")
-            console.log("chose playlist " + chosenPlaylist)
+            console.log("chosen playlist " + chosenPlaylist)
         }
+        const Input = () => {
+            const handleKeyDown = (event) => {
+                if (event.key === 'Enter') {
+                    setBpm(event.target.value)
+                }
+            }
+            return (
+                <div className={"input-group align-self-center"} style={{width: "20%"}}>
+                    <div className="input-group-prepend">
+                        <span className="input-group-text" id="basic-addon1">BPM</span>
+                    </div>
+                    <input type={"number"} className={"form-control"} placeholder={""} onKeyDown={handleKeyDown}/>
+                </div>
+            )
+        }
+
         return (
             <div className={"container"} style={{}}>
                 <h1 className={"text-center"}>Pulsify</h1>
@@ -51,17 +82,21 @@ function App() {
                         </button>
                     </div>
                     <br/>
-                    {chosenPlaylist ? (
-                        <SpotifyPlayer token={token} uris={['spotify:playlist:'+chosenPlaylist]} styles={{
-                            activeColor: '#fff',
-                            bgColor: '#333',
-                            color: '#fff',
-                            loaderColor: '#fff',
-                            sliderColor: '#1cb954',
-                            trackArtistColor: '#ccc',
-                            trackNameColor: '#fff',
-                        }}/>) : null}
-
+                    {trackToPlay ? (
+                        <SpotifyPlayer token={token} uris={['spotify:track:' + trackToPlay]} play={true} initialVolume={50} magnifySliderOnHover={true}
+                                       styles={{
+                                           activeColor: '#fff',
+                                           bgColor: '#333',
+                                           color: '#fff',
+                                           loaderColor: '#fff',
+                                           sliderColor: '#1cb954',
+                                           trackArtistColor: '#ccc',
+                                           trackNameColor: '#fff',
+                                       }}/>) : null}
+                    <br/>
+                    {Input()}
+                    <br/>
+                    <p className={"align-self-center"}>Your current bpm is : {bpm}</p>
                     <div className="modal fade " id="playlistsModal" tabIndex="-1" role="dialog"
                          aria-labelledby="exampleModalLabel" aria-hidden="true">
                         <div className="modal-dialog" role="document">
@@ -88,21 +123,24 @@ function App() {
         );
     } else {
         return (
-            <SpotifyAuth
-                redirectUri='http://localhost:3000'
-                clientID='dd7a0938872c4219b6b83bbe40cb5404'
-                showDialog={true}
-                noLogo={true}
-                scopes={[Scopes.userReadPrivate, Scopes.playlistReadPrivate, Scopes.playlistReadCollaborative,
-                    Scopes.streaming, Scopes.userReadEmail, Scopes.userLibraryRead, Scopes.userLibraryModify, Scopes.userReadPlaybackState, Scopes.userModifyPlaybackState]}/>
+            <div className={"container text-center"} style={{ marginTop:"25%"}}>
+                <SpotifyAuth
+                    redirectUri='http://localhost:3000'
+                    clientID='dd7a0938872c4219b6b83bbe40cb5404'
+                    showDialog={true}
+                    noLogo={true}
+                    scopes={[Scopes.userReadPrivate, Scopes.playlistReadPrivate, Scopes.playlistReadCollaborative,
+                        Scopes.streaming, Scopes.userReadEmail, Scopes.userLibraryRead, Scopes.userLibraryModify, Scopes.userReadPlaybackState, Scopes.userModifyPlaybackState]}/>
+            </div>
         )
     }
 
 
-    function clearCookies(){
+    function clearCookies() {
         Cookies.remove("spotifyAuthToken")
         window.location.reload()
     }
+
     function getUserID() {
         Axios.get("https://api.spotify.com/v1/me", {
             headers: {
@@ -128,6 +166,47 @@ function App() {
                           getChoice={choice => setChosenPlaylist(choice)}/>
         ))
     }
+
+    function getTempos(playlist) {
+        let tempos = {}
+        let tracksID = []
+        spotifyApi.getPlaylist(playlist).then((res) => {
+            if (res.tracks.items !== undefined) {
+                res.tracks.items.forEach((song) => {
+                    tracksID.push(song.track.id)
+                })
+                spotifyApi.getAudioFeaturesForTracks(tracksID).then((audioFeatures => {
+                    audioFeatures.audio_features.forEach((feature) => {
+                        tempos[feature.id] = feature.tempo
+                    })
+                    console.log(Object.keys(tempos).length)
+                    setTempos(tempos)
+                    console.log(Object.keys(tempos).length)
+                }))
+            }
+        })
+    }
+
+    function chooseCorrectTrack() {
+        console.log("tempos size " + Object.keys(tempos).length)
+        let temposToGetClosest = []
+        for (const [key, value] of Object.entries(tempos)) {
+            temposToGetClosest.push(Math.round(Number(value)))
+        }
+        const closestSong = temposToGetClosest.sort((a, b) => {
+            return Math.abs(bpm - a) - Math.abs(bpm - b);
+        })
+        for (const [key, value] of Object.entries(tempos)) {
+            if (Math.round(Number(value)) === closestSong[0]) {
+                console.log("new track to play : " + key)
+                setTrackToPlay(key)
+                return;
+            }
+        }
+        console.log("could not find track to play")
+
+    }
+
 }
 
 
