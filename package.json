@@ -9,6 +9,7 @@
     "@testing-library/user-event": "^12.8.3",
     "axios": "^0.21.1",
     "bootstrap": "^4.6.0",
+    "empatica-e4-client": "^1.0.4",
     "face-api.js": "^0.22.2",
     "jquery": "^3.6.0",
     "js-cookie": "^2.2.1",
