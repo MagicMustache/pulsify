@@ -39,11 +39,11 @@ function App() {
 
     useEffect(() => {
         const interval = setInterval(() => {
-            Axios.get("http://localhost/bpm:3001").then((res)=>{
-                console.log("current bpm : "+res.data.bpm);
-                setBpm(parseInt(res.data.bpm))
+            Axios.get("http://localhost:3001/bpm").then((res)=>{
+                console.log("current bpm : "+res.data);
+                setBpm(parseInt(res.data))
             })
-        }, 2000);
+        }, 5000);
         return () => clearInterval(interval);
     }, []);
 
