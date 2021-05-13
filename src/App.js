@@ -37,6 +37,16 @@ function App() {
         }
     }, [bpm])
 
+    useEffect(() => {
+        const interval = setInterval(() => {
+            Axios.get("http://localhost/bpm:3001").then((res)=>{
+                console.log("current bpm : "+res.data.bpm);
+                setBpm(parseInt(res.data.bpm))
+            })
+        }, 2000);
+        return () => clearInterval(interval);
+    }, []);
+
     if (token) {
         spotifyApi.setAccessToken(token)
         if (chosenPlaylist !== "") {
@@ -59,20 +69,6 @@ function App() {
             )
         }
 
-        //Empatica
-        var EmpaticaE4 = require('empatica-e4-client');
-        var dev1 = new EmpaticaE4();
-
-        var portNumber  = 28000;
-        var ipAddress   = '127.0.0.1';
-        var deviceID    = '543a64';        //Empatica E4 device ID //543a64 ou 484c5c
-        dev1.connect(portNumber ,ipAddress, deviceID, function(data){
-            var sensorData = EmpaticaE4.getString(data);
-            console.log(sensorData);
-        });
-        setTimeout(function() {
-            dev1.subscribe(EmpaticaE4.E4_BVP);
-        }, 1000);
 
         return (
             <div className={"container"} style={{}}>
