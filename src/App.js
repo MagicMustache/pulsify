@@ -15,11 +15,14 @@ function App() {
     const [userPlaylists, setPlaylists] = useState([])
     const [startCam, setStartCam] = useState(false)
     const [chosenPlaylist, setChosenPlaylist] = useState("")
-    const [bpm, setBpm] = useState(95)
-    const [tempos, setTempos] = useState({})
+    const [bpm, setBpm] = useState(75) //75 is our arbitrary average value of bpm (as it goes between 60-100)
+    const [tempo, setTempo] = useState(116) //the tempo used to find a song, calculated using bpm -> 116 = average value
+    const [tempos, setTempos] = useState({}) //array of all songs tempo in the playlist
     const [trackToPlay, setTrackToPlay] = useState("")
 
-    const spotifyApi = new SpotifyWebApi();
+    const spotifyApi = new SpotifyWebApi()
+
+    let lastTackChangeBPM = 75 //to check the delta bpm
 
     useEffect(() => {
         getUserID()
@@ -35,17 +38,25 @@ function App() {
         if (chosenPlaylist !== "") {
             chooseCorrectTrack()
         }
+    }, [tempo])
+
+    useEffect(() => {
+        if (chosenPlaylist !== "" && !chooseCorrectTrack()) {
+            chooseCorrectTrack()
+        }
     }, [bpm])
 
     useEffect(() => {
         const interval = setInterval(() => {
             Axios.get("http://localhost:3001/bpm").then((res)=>{
-                console.log("current bpm : "+res.data);
-                setBpm(parseInt(res.data))
+                console.log("current bpm : "+res.data)
+                let currentBpm = parseInt(res.data)
+                setBpm(currentBpm)
+                deltaBpm(currentBpm)
             })
-        }, 5000);
-        return () => clearInterval(interval);
-    }, []);
+        }, 5000)
+        return () => clearInterval(interval)
+    }, [])
 
     if (token) {
         spotifyApi.setAccessToken(token)
@@ -57,6 +68,7 @@ function App() {
             const handleKeyDown = (event) => {
                 if (event.key === 'Enter') {
                     setBpm(event.target.value)
+                    deltaBpm(event.target.value)
                 }
             }
             return (
@@ -108,6 +120,7 @@ function App() {
                     {Input()}
                     <br/>
                     <p className={"align-self-center"}>Your current bpm is : {bpm}</p>
+                    <p className={"align-self-center"}>The corresponding tempo is : {tempo}</p>
                     <div className="modal fade " id="playlistsModal" tabIndex="-1" role="dialog"
                          aria-labelledby="exampleModalLabel" aria-hidden="true">
                         <div className="modal-dialog" role="document">
@@ -146,6 +159,17 @@ function App() {
         )
     }
 
+    function ruleOfThree(bpm){
+        let tempo = Math.round(bpm*(116/75)) //bpm * average song tempo / arbitrary average rest heart rate (cause average is between 60-100)
+        console.log("current tempo is: " + tempo)
+        setTempo(tempo)
+    }
+
+    function deltaBpm(bpm){
+        if (Math.abs(lastTackChangeBPM - bpm) >= 10){
+            ruleOfThree(bpm)
+        }
+    }
 
     function clearCookies() {
         Cookies.remove("spotifyAuthToken")
@@ -205,7 +229,7 @@ function App() {
             temposToGetClosest.push(Math.round(Number(value)))
         }
         const closestSong = temposToGetClosest.sort((a, b) => {
-            return Math.abs(bpm - a) - Math.abs(bpm - b);
+            return Math.abs(tempo - a) - Math.abs(tempo - b);
         })
         for (const [key, value] of Object.entries(tempos)) {
             if (Math.round(Number(value)) === closestSong[0]) {
