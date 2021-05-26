@@ -19,10 +19,9 @@ function App() {
     const [tempo, setTempo] = useState(116) //the tempo used to find a song, calculated using bpm -> 116 = average value
     const [tempos, setTempos] = useState({}) //array of all songs tempo in the playlist
     const [trackToPlay, setTrackToPlay] = useState("")
+    const [lastTackChangeBPM, setLastTackChangeBPM] = useState(75)
 
     const spotifyApi = new SpotifyWebApi()
-
-    let lastTackChangeBPM = 75 //to check the delta bpm
 
     useEffect(() => {
         getUserID()
@@ -48,8 +47,8 @@ function App() {
 
     useEffect(() => {
         const interval = setInterval(() => {
-            Axios.get("http://localhost:3001/bpm").then((res)=>{
-                console.log("current bpm : "+res.data)
+            Axios.get("http://localhost:3001/bpm").then((res) => {
+                console.log("current bpm : " + res.data)
                 let currentBpm = parseInt(res.data)
                 setBpm(currentBpm)
                 deltaBpm(currentBpm)
@@ -106,7 +105,8 @@ function App() {
                     </div>
                     <br/>
                     {trackToPlay ? (
-                        <SpotifyPlayer token={token} uris={['spotify:track:' + trackToPlay]} play={true} initialVolume={50} magnifySliderOnHover={true}
+                        <SpotifyPlayer token={token} uris={['spotify:track:' + trackToPlay]} play={true}
+                                       initialVolume={50} magnifySliderOnHover={true}
                                        styles={{
                                            activeColor: '#fff',
                                            bgColor: '#333',
@@ -147,7 +147,7 @@ function App() {
         );
     } else {
         return (
-            <div className={"container text-center"} style={{ marginTop:"25%"}}>
+            <div className={"container text-center"} style={{marginTop: "25%"}}>
                 <SpotifyAuth
                     redirectUri='http://localhost:3000'
                     clientID='dd7a0938872c4219b6b83bbe40cb5404'
@@ -159,14 +159,14 @@ function App() {
         )
     }
 
-    function ruleOfThree(bpm){
-        let tempo = Math.round(bpm*(116/75)) //bpm * average song tempo / arbitrary average rest heart rate (cause average is between 60-100)
+    function ruleOfThree(bpm) {
+        let tempo = Math.round(bpm * (116 / 75)) //bpm * average song tempo / arbitrary average rest heart rate (cause average is between 60-100)
         console.log("current tempo is: " + tempo)
         setTempo(tempo)
     }
 
-    function deltaBpm(bpm){
-        if (Math.abs(lastTackChangeBPM - bpm) >= 10){
+    function deltaBpm(bpm) {
+        if (Math.abs(lastTackChangeBPM - bpm) >= 10) {
             ruleOfThree(bpm)
         }
     }
@@ -234,6 +234,7 @@ function App() {
         for (const [key, value] of Object.entries(tempos)) {
             if (Math.round(Number(value)) === closestSong[0]) {
                 console.log("new track to play : " + key)
+                setLastTackChangeBPM(bpm)
                 setTrackToPlay(key)
                 return;
             }
