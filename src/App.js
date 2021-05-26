@@ -8,6 +8,7 @@ import SpotifyWebApi from "spotify-web-api-js";
 import SpotifyPlayer from 'react-spotify-web-playback';
 import Playlist from "./components/Playlist";
 import $ from "jquery";
+import {wait} from "@testing-library/react";
 
 function App() {
     const token = Cookies.get('spotifyAuthToken')
@@ -20,6 +21,7 @@ function App() {
     const [tempos, setTempos] = useState({}) //array of all songs tempo in the playlist
     const [trackToPlay, setTrackToPlay] = useState("")
     const [lastTackChangeBPM, setLastTackChangeBPM] = useState(75)
+    const [volume,setVolume] = useState(50)
 
     const spotifyApi = new SpotifyWebApi()
 
@@ -80,14 +82,13 @@ function App() {
             )
         }
 
-
         return (
             <div className={"container"} style={{}}>
                 <h1 className={"text-center"}>Pulsify</h1>
                 <div className={"d-flex flex-column"}>
                     {startCam ? (<Camera/>) : null}
                     <div className={"d-flex d-flex-column justify-content-center"}>
-                        <h3>You are connected as "{userId}" on Spotify{"\n"}</h3>
+                        <h3>Connected as "{userId}" on Spotify{"\n"}</h3>
                     </div>
                     <div className={"d-flex d-flex-row justify-content-center"}>
                         <button className={"btn btn-info"} onClick={() => getUserPlaylists()} data-toggle="modal"
@@ -106,7 +107,7 @@ function App() {
                     <br/>
                     {trackToPlay ? (
                         <SpotifyPlayer token={token} uris={['spotify:track:' + trackToPlay]} play={true}
-                                       initialVolume={50} magnifySliderOnHover={true}
+                                       initialVolume={volume} magnifySliderOnHover={true}
                                        styles={{
                                            activeColor: '#fff',
                                            bgColor: '#333',
@@ -231,8 +232,11 @@ function App() {
         const closestSong = temposToGetClosest.sort((a, b) => {
             return Math.abs(tempo - a) - Math.abs(tempo - b);
         })
+        let randomClosestSong = Math.floor(Math.random()*5)
+
+
         for (const [key, value] of Object.entries(tempos)) {
-            if (Math.round(Number(value)) === closestSong[0]) {
+            if (Math.round(Number(value)) === closestSong[randomClosestSong]) {
                 console.log("new track to play : " + key)
                 setLastTackChangeBPM(bpm)
                 setTrackToPlay(key)
@@ -240,9 +244,7 @@ function App() {
             }
         }
         console.log("could not find track to play")
-
     }
-
 }
 
 

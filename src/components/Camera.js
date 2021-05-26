@@ -7,10 +7,10 @@ function Camera() {
     const [video, setvideo] = useState()
     const [emotion, setEmotion] = useState({happy: false, score: 0.0})
     const [loadedModels, setLoadedModels] = useState(false)
+
     useEffect(() => {
         setvideo(document.getElementById("video"))
     }, [video])
-
 
     if(!loadedModels){
         if (video != null) {
@@ -28,7 +28,7 @@ function Camera() {
     }
 
     const renderVideo = useMemo(() => (
-        <video id={"video"} width="720" height="540" autoPlay muted style={{}}/>
+        <video id={"video"} width="400" autoPlay muted style={{}}/>
     ), [])
 
     return (
@@ -37,7 +37,6 @@ function Camera() {
             <br/>
             <button className={"btn btn-primary"} onClick={() => checkEmotion()}>Check Emotion</button>
             <IsHappy emotion={emotion}/>
-
         </div>
     )
 
