@@ -1,6 +1,6 @@
 import './App.css';
 import Camera from "./components/Camera";
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {Scopes, SpotifyAuth} from 'react-spotify-auth'
 import Axios from "axios"
 import Cookies from 'js-cookie'
@@ -8,7 +8,6 @@ import SpotifyWebApi from "spotify-web-api-js";
 import SpotifyPlayer from 'react-spotify-web-playback';
 import Playlist from "./components/Playlist";
 import $ from "jquery";
-import {wait} from "@testing-library/react";
 
 function App() {
     const token = Cookies.get('spotifyAuthToken')
@@ -22,7 +21,7 @@ function App() {
     const [trackToPlay, setTrackToPlay] = useState("")
     const [lastTackChangeBPM, setLastTackChangeBPM] = useState(75)
     const [volume,setVolume] = useState(50)
-
+    const [fade, setFade] = useState(false)
     const spotifyApi = new SpotifyWebApi()
 
     useEffect(() => {
@@ -46,6 +45,13 @@ function App() {
             chooseCorrectTrack()
         }
     }, [bpm])
+
+    useInterval(()=>{
+        if(volume>0 && fade){
+            setVolume(volume-1)
+            console.log("test "+volume)
+        }
+    }, 100)
 
     useEffect(() => {
         const interval = setInterval(() => {
@@ -160,6 +166,26 @@ function App() {
         )
     }
 
+    function useInterval(callback, delay) {
+        const savedCallback = useRef();
+
+        // Remember the latest callback.
+        useEffect(() => {
+            savedCallback.current = callback;
+        }, [callback]);
+
+        // Set up the interval.
+        useEffect(() => {
+            function tick() {
+                savedCallback.current();
+            }
+            if (delay !== null) {
+                let id = setInterval(tick, delay);
+                return () => clearInterval(id);
+            }
+        }, [delay]);
+    }
+
     function ruleOfThree(bpm) {
         let tempo = Math.round(bpm * (116 / 75)) //bpm * average song tempo / arbitrary average rest heart rate (cause average is between 60-100)
         console.log("current tempo is: " + tempo)
@@ -233,7 +259,7 @@ function App() {
             return Math.abs(tempo - a) - Math.abs(tempo - b);
         })
         let randomClosestSong = Math.floor(Math.random()*5)
-
+        setFade(true)
 
         for (const [key, value] of Object.entries(tempos)) {
             if (Math.round(Number(value)) === closestSong[randomClosestSong]) {
