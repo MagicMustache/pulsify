@@ -88,27 +88,29 @@ function App() {
             )
         }
 
+        var logo = require('./images/logopulsify.png')
         return (
-            <div className={"container"} style={{}}>
-                <h1 className={"text-center"}>Pulsify</h1>
+            <div className={"pagesetup background"} style={{}}>
+                <h1 className={"text-center"} style={{marginTop: "10px"}}><img src={logo.default} width={"100"} height={"100"}/> Pulsify</h1>
                 <div className={"d-flex flex-column"}>
                     {startCam ? (<Camera/>) : null}
-                    <div className={"d-flex d-flex-column justify-content-center"}>
-                        <h3>Connected as "{userId}" on Spotify{"\n"}</h3>
-                    </div>
                     <div className={"d-flex d-flex-row justify-content-center"}>
                         <button className={"btn btn-info"} onClick={() => getUserPlaylists()} data-toggle="modal"
                                 data-target="#playlistsModal">
                             Choose a playlist
                         </button>
-                        <button className={"btn btn-danger"} onClick={() => clearCookies()}
+                        <br/>
+                        {/* <button className={"btn btn-danger"} onClick={() => clearCookies()}
                                 style={{marginLeft: "2em"}}>
                             Clear Cookies
                         </button>
                         <button className={"btn btn-primary"} onClick={() => setStartCam(!startCam)}
                                 style={{marginLeft: "2em"}}>
                             Show Webcam
-                        </button>
+                        </button> */}
+                    </div>
+                    <div className={"d-flex d-flex-column justify-content-center"}>
+                        <p>Connected as <strong>{userId}</strong> on Spotify{"\n"}</p>
                     </div>
                     <br/>
                     {trackToPlay ? (
@@ -132,13 +134,13 @@ function App() {
                          aria-labelledby="exampleModalLabel" aria-hidden="true">
                         <div className="modal-dialog" role="document">
                             <div className="modal-content">
-                                <div className="modal-header">
+                                <div className="modal-header background2">
                                     <h5 className="modal-title" id="exampleModalLabel">Choose a playlist</h5>
                                     <button type="button" className="close" data-dismiss="modal" aria-label="Close">
                                         <span aria-hidden="true">&times;</span>
                                     </button>
                                 </div>
-                                <div className="modal-body align-content-center">
+                                <div className="modal-body align-content-center background2">
                                     {userPlaylists ? generatePlaylistsComponents(userPlaylists) : "error"}
                                 </div>
                                 <div className="modal-footer">
@@ -220,6 +222,9 @@ function App() {
         spotifyApi.getUserPlaylists(userId).then((res) => {
             setPlaylists(res.items)
         })
+        if(!startCam){
+            setStartCam(!startCam)
+        }
     }
 
     function generatePlaylistsComponents(playlists) {

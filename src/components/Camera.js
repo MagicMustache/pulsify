@@ -28,15 +28,17 @@ function Camera() {
     }
 
     const renderVideo = useMemo(() => (
-        <video id={"video"} width="400" autoPlay muted style={{}}/>
+        <center><video id={"video"} width="400" autoPlay muted style={{}}/></center>
     ), [])
 
     return (
         <div className="container-fluid">
             {renderVideo}
+            {/*
             <br/>
             <button className={"btn btn-primary"} onClick={() => checkEmotion()}>Check Emotion</button>
             <IsHappy emotion={emotion}/>
+            */}
         </div>
     )
 
