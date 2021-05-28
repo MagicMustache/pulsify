@@ -95,19 +95,21 @@ function App() {
                 <div className={"d-flex flex-column"}>
                     {startCam ? (<Camera/>) : null}
                     <div className={"d-flex d-flex-row justify-content-center"}>
-                        <button className={"btn btn-info"} onClick={() => getUserPlaylists()} data-toggle="modal"
+                        <button className={"btn btn-success btnplaylist"} onClick={() => getUserPlaylists()} data-toggle="modal"
                                 data-target="#playlistsModal">
                             Choose a playlist
                         </button>
                         <br/>
-                        {/* <button className={"btn btn-danger"} onClick={() => clearCookies()}
+                        <button className={"btn btn-warning btnlogout"} onClick={() => clearCookies()}
                                 style={{marginLeft: "2em"}}>
-                            Clear Cookies
+                            Log out
                         </button>
+                        {/*
                         <button className={"btn btn-primary"} onClick={() => setStartCam(!startCam)}
                                 style={{marginLeft: "2em"}}>
                             Show Webcam
-                        </button> */}
+                        </button>
+                        */}
                     </div>
                     <div className={"d-flex d-flex-column justify-content-center"}>
                         <p>Connected as <strong>{userId}</strong> on Spotify{"\n"}</p>
@@ -128,8 +130,16 @@ function App() {
                     <br/>
                     {Input()}
                     <br/>
-                    <p className={"align-self-center"}>Your current bpm is : {bpm}</p>
-                    <p className={"align-self-center"}>The corresponding tempo is : {tempo}</p>
+                    <div className={"align-self-center bpm-container"}>
+                        <div className={"some-margin"}>
+                            <div className={"bpm-line"}>
+                                <h4>❤ </h4><h4 className={"bpm square"}>{bpm}</h4>
+                            </div>
+                            <div className={"bpm-line"}>
+                                <h4>🎶 </h4><h4 className={"bpm square"}>{tempo}</h4>
+                            </div>
+                        </div>
+                    </div>
                     <div className="modal fade " id="playlistsModal" tabIndex="-1" role="dialog"
                          aria-labelledby="exampleModalLabel" aria-hidden="true">
                         <div className="modal-dialog" role="document">
