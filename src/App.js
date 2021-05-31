@@ -72,10 +72,6 @@ function App() {
         return () => clearInterval(interval)
     }, [])
 
-    useEffect(() => {
-
-    }, [show])
-
     if (token) {
         spotifyApi.setAccessToken(token)
         if (chosenPlaylist !== "") {
@@ -90,7 +86,7 @@ function App() {
                 }
             }
             return (
-                <div className={"input-group align-self-center"} style={{width: "20%"}}>
+                <div className={"input-group align-self-center"} style={{width: "10%"}}>
                     <div className="input-group-prepend">
                         <span className="input-group-text" id="basic-addon1">BPM</span>
                     </div>
@@ -125,19 +121,19 @@ function App() {
                     </div>
                     <br/>
                     {trackToPlay ? (
-                        <SpotifyPlayer token={token} uris={['spotify:track:' + trackToPlay]} play={true}
-                                       initialVolume={volume} magnifySliderOnHover={true}
-                                       styles={{
-                                           activeColor: '#fff',
-                                           bgColor: '#333',
-                                           color: '#fff',
-                                           loaderColor: '#fff',
-                                           sliderColor: '#1cb954',
-                                           trackArtistColor: '#ccc',
-                                           trackNameColor: '#fff',
-                                       }}/>) : null}
-                    <br/>
-                    {Input()}
+                        <div className={"input-group align-self-center"} style={{width: "30%"}}>
+                            <SpotifyPlayer token={token} uris={['spotify:track:' + trackToPlay]} play={true}
+                                           initialVolume={volume} magnifySliderOnHover={true}
+                                           styles={{
+                                               activeColor: '#fff',
+                                               bgColor: '#333',
+                                               color: '#fff',
+                                               loaderColor: '#fff',
+                                               sliderColor: '#1cb954',
+                                               trackArtistColor: '#ccc',
+                                               trackNameColor: '#fff',
+                                           }}/></div>) : null}
+
                     <br/>
                     <div className={"align-self-center bpm-container"}>
                         <div className={"some-margin"}>
@@ -152,6 +148,8 @@ function App() {
 
                     <Notifications trigger={show}/>
 
+                    <br/>
+                    {Input()}
                     <div className="modal fade " id="playlistsModal" tabIndex="-1" role="dialog"
                          aria-labelledby="exampleModalLabel" aria-hidden="true">
                         <div className="modal-dialog" role="document">
