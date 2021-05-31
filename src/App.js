@@ -23,6 +23,7 @@ function App() {
     const [volume,setVolume] = useState(50)
     const [fade, setFade] = useState(false)
     const spotifyApi = new SpotifyWebApi()
+    const logo = require('./images/logopulsify.png');
 
     useEffect(() => {
         getUserID()
@@ -88,7 +89,6 @@ function App() {
             )
         }
 
-        var logo = require('./images/logopulsify.png')
         return (
             <div className={"pagesetup background"} style={{}}>
                 <h1 className={"text-center"} style={{marginTop: "10px"}}><img src={logo.default} width={"100"} height={"100"}/> Pulsify</h1>
@@ -104,12 +104,6 @@ function App() {
                                 style={{marginLeft: "2em"}}>
                             Log out
                         </button>
-                        {/*
-                        <button className={"btn btn-primary"} onClick={() => setStartCam(!startCam)}
-                                style={{marginLeft: "2em"}}>
-                            Show Webcam
-                        </button>
-                        */}
                     </div>
                     <div className={"d-flex d-flex-column justify-content-center"}>
                         <p>Connected as <strong>{userId}</strong> on Spotify{"\n"}</p>

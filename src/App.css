@@ -1,27 +1,22 @@
 .background{
-    background:linear-gradient(360deg, rgba(250,0,0,0.5),transparent);
-    background-color: orange;
+    background: orange linear-gradient(360deg, rgba(250, 0, 0, 0.5), transparent);
 }
 
 .background2{
-    background:linear-gradient(90deg, rgba(250,0,0,0.5),transparent);
-    background-color: lightcyan;
+    background: lightcyan linear-gradient(90deg, rgba(250, 0, 0, 0.5), transparent);
 }
 
 .btnlogout{
-    background:linear-gradient(360deg, rgba(229,103,23,0.5),transparent);
-    background-color: rgb(255, 226, 0);
+    background: rgb(255, 226, 0) linear-gradient(360deg, rgba(229, 103, 23, 0.5), transparent);
     color: white !important;
 }
 
 .btnplaylist{
-    background:linear-gradient(360deg, rgba(80,200,120,0.5),transparent);
-    background-color: rgb(11, 102, 35);
+    background: rgb(11, 102, 35) linear-gradient(360deg, rgba(80, 200, 120, 0.5), transparent);
 }
 
 .bpm-container{
-    background:linear-gradient(rgba(250,0,0,0.5),transparent);
-    background-color: orange;
+    background: orange linear-gradient(rgba(250, 0, 0, 0.5), transparent);
     color: white;
     border-radius: 25px
 }
