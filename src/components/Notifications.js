@@ -39,7 +39,8 @@ function Notifications(props) {
         const title1 = "Smile if you would want to keep this song !"
         const body = ''
         const tag = Date.now();
-        const icon = 'http://mobilusoss.github.io/react-web-notification/example/Notifications_button_24.png';
+        const logo = require('../images/smile500px.png');
+        const icon = logo.default;
 
         const options1 = {
             tag: tag,
