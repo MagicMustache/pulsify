@@ -8,9 +8,12 @@ import SpotifyWebApi from "spotify-web-api-js";
 import SpotifyPlayer from 'react-spotify-web-playback';
 import Playlist from "./components/Playlist";
 import $ from "jquery";
+import Notifications from "./components/Notifications";
 
 function App() {
     const token = Cookies.get('spotifyAuthToken')
+    const spotifyApi = new SpotifyWebApi()
+    const logo = require('./images/logopulsify.png');
     const [userId, setUserId] = useState("")
     const [userPlaylists, setPlaylists] = useState([])
     const [startCam, setStartCam] = useState(false)
@@ -20,13 +23,15 @@ function App() {
     const [tempos, setTempos] = useState({}) //array of all songs tempo in the playlist
     const [trackToPlay, setTrackToPlay] = useState("")
     const [lastTackChangeBPM, setLastTackChangeBPM] = useState(75)
-    const [volume,setVolume] = useState(50)
+    const [volume, setVolume] = useState(50)
     const [fade, setFade] = useState(false)
-    const spotifyApi = new SpotifyWebApi()
-    const logo = require('./images/logopulsify.png');
+    const [show, setShow] = useState(false)
 
     useEffect(() => {
         getUserID()
+        if (!startCam) {
+            setStartCam(!startCam)
+        }
     }, [])
 
     useEffect(() => {
@@ -42,17 +47,18 @@ function App() {
     }, [tempo])
 
     useEffect(() => {
-        if (chosenPlaylist !== "" && !chooseCorrectTrack()) {
+        if (chosenPlaylist !== "" && trackToPlay!=="") {
             chooseCorrectTrack()
         }
     }, [bpm])
 
-    useInterval(()=>{
-        if(volume>0 && fade){
-            setVolume(volume-1)
-            console.log("test "+volume)
+    /*
+    useInterval(() => {
+        if (volume > 0 && fade) {
+            setVolume(volume - 1)
+            console.log("test " + volume)
         }
-    }, 100)
+    }, 100)*/
 
     useEffect(() => {
         const interval = setInterval(() => {
@@ -65,6 +71,10 @@ function App() {
         }, 5000)
         return () => clearInterval(interval)
     }, [])
+
+    useEffect(() => {
+
+    }, [show])
 
     if (token) {
         spotifyApi.setAccessToken(token)
@@ -91,11 +101,13 @@ function App() {
 
         return (
             <div className={"pagesetup background"} style={{}}>
-                <h1 className={"text-center"} style={{marginTop: "10px"}}><img src={logo.default} width={"100"} height={"100"}/> Pulsify</h1>
+                <h1 className={"text-center"} style={{marginTop: "10px"}}><img src={logo.default} width={"100"}
+                                                                               height={"100"} alt={""}/> Pulsify</h1>
                 <div className={"d-flex flex-column"}>
                     {startCam ? (<Camera/>) : null}
                     <div className={"d-flex d-flex-row justify-content-center"}>
-                        <button className={"btn btn-success btnplaylist"} onClick={() => getUserPlaylists()} data-toggle="modal"
+                        <button className={"btn btn-success btnplaylist"} onClick={() => getUserPlaylists()}
+                                data-toggle="modal"
                                 data-target="#playlistsModal">
                             Choose a playlist
                         </button>
@@ -103,6 +115,9 @@ function App() {
                         <button className={"btn btn-warning btnlogout"} onClick={() => clearCookies()}
                                 style={{marginLeft: "2em"}}>
                             Log out
+                        </button>
+                        <button className={"btn btn-primary"} onClick={() => setShow(!show)}>
+                            {show.toString()}
                         </button>
                     </div>
                     <div className={"d-flex d-flex-column justify-content-center"}>
@@ -134,6 +149,9 @@ function App() {
                             </div>
                         </div>
                     </div>
+
+                    <Notifications trigger={show}/>
+
                     <div className="modal fade " id="playlistsModal" tabIndex="-1" role="dialog"
                          aria-labelledby="exampleModalLabel" aria-hidden="true">
                         <div className="modal-dialog" role="document">
@@ -185,6 +203,7 @@ function App() {
             function tick() {
                 savedCallback.current();
             }
+
             if (delay !== null) {
                 let id = setInterval(tick, delay);
                 return () => clearInterval(id);
@@ -226,9 +245,6 @@ function App() {
         spotifyApi.getUserPlaylists(userId).then((res) => {
             setPlaylists(res.items)
         })
-        if(!startCam){
-            setStartCam(!startCam)
-        }
     }
 
     function generatePlaylistsComponents(playlists) {
@@ -267,7 +283,7 @@ function App() {
         const closestSong = temposToGetClosest.sort((a, b) => {
             return Math.abs(tempo - a) - Math.abs(tempo - b);
         })
-        let randomClosestSong = Math.floor(Math.random()*5)
+        let randomClosestSong = Math.floor(Math.random() * 5)
         setFade(true)
 
         for (const [key, value] of Object.entries(tempos)) {
