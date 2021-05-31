@@ -47,7 +47,7 @@ function App() {
     }, [tempo])
 
     useEffect(() => {
-        if (chosenPlaylist !== "" && trackToPlay!=="") {
+        if (chosenPlaylist !== "" && !chooseCorrectTrack()) {
             chooseCorrectTrack()
         }
     }, [bpm])
@@ -72,7 +72,7 @@ function App() {
         return () => clearInterval(interval)
     }, [])
 
-    if (token) {
+    if (token && userId) {
         spotifyApi.setAccessToken(token)
         if (chosenPlaylist !== "") {
             $("#playlistsModal").modal("hide")
