@@ -22,12 +22,10 @@ function App() {
     const [tempos, setTempos] = useState({}) //array of all songs tempo in the playlist
     const [trackToPlay, setTrackToPlay] = useState("")
     const [lastTackChangeBPM, setLastTackChangeBPM] = useState(75)
-    const [volume, setVolume] = useState(50)
-    const [fade, setFade] = useState(false)
     const [show, setShow] = useState(false)
     const [startLookingForSmile, setLookingForSmile] = useState(false)
     const [keepCurrentTrack, setKeepCurrentTrack] = useState(false)
-    const [test, setTest] = useState(false)
+    const [testKeepCurrentTrack, setTestKeepCurrentTrack] = useState(false)
 
     useEffect(() => {
         getUserID()
@@ -57,7 +55,7 @@ function App() {
         } else{
             setKeepCurrentTrack(false)
         }
-    }, [test])
+    }, [testKeepCurrentTrack])
 
 
     useEffect(() => {
@@ -119,7 +117,7 @@ function App() {
                     {trackToPlay ? (
                         <div className={"input-group align-self-center"} style={{width: "30%"}}>
                             <SpotifyPlayer token={token} uris={['spotify:track:' + trackToPlay]} play={true}
-                                           initialVolume={volume} magnifySliderOnHover={true}
+                                           initialVolume={50} magnifySliderOnHover={true}
                                            styles={{
                                                activeColor: '#fff',
                                                bgColor: '#333',
@@ -285,12 +283,14 @@ function App() {
             return Math.abs(tempo - a) - Math.abs(tempo - b);
         })
         let randomClosestSong = Math.floor(Math.random() * 5)
-        setFade(true)
 
         for (const [key, value] of Object.entries(tempos)) {
             if (Math.round(Number(value)) === closestSong[randomClosestSong]) {
                 console.log("new track to play : " + key)
                 setLastTackChangeBPM(bpm)
+                if(trackToPlay===key){
+                    chooseCorrectTrack()
+                }
                 setTrackToPlay(key)
                 setShow(true)
                 setLookingForSmile(true)
@@ -298,7 +298,7 @@ function App() {
                     console.log("keep "+ keepCurrentTrack)
                     setShow(false)
                     setLookingForSmile(false)
-                    setTest(!test)
+                    setTestKeepCurrentTrack(!testKeepCurrentTrack)
                 }, 10000)
                 return;
             }
