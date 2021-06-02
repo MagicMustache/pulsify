@@ -60,7 +60,7 @@ function Camera(props) {
     async function checkEmotion() {
         let detections = await faceapi.detectSingleFace(video, new faceapi.TinyFaceDetectorOptions()).withFaceLandmarks().withFaceExpressions()
         if (detections !== undefined) {
-            if (detections.expressions.happy > 0.30) {
+            if (detections.expressions.happy > 0.50) {
                 return true
             }
         }

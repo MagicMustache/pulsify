@@ -41,32 +41,22 @@ function App() {
     useEffect(() => {
         if (chosenPlaylist !== "") {
             chooseCorrectTrack()
-            setTimeout(() => {
-                setShow(false)
-                setLookingForSmile(false)
-            }, 10000)
         }
     }, [tempo])
 
     useEffect(() => {
         if (chosenPlaylist !== "" && !trackToPlay) {
             chooseCorrectTrack()
-            setTimeout(() => {
-                setShow(false)
-                setLookingForSmile(false)
-            }, 10000)
         }
     }, [bpm])
 
     useEffect(()=>{
         if(!keepCurrentTrack){
             chooseCorrectTrack()
-            setTimeout(() => {
-                setShow(false)
-                setLookingForSmile(false)
-            }, 10000)
+        } else{
+            setKeepCurrentTrack(false)
         }
-    }, [keepCurrentTrack])
+    }, [test])
 
 
     useEffect(() => {
@@ -193,9 +183,9 @@ function App() {
         )
     }
 
-    function keepTheSong(){
-        if(!keepCurrentTrack){
-            setKeepCurrentTrack(true)
+    function keepTheSong() {
+        if (!keepCurrentTrack) {
+            setKeepCurrentTrack( true)
         }
     }
 
