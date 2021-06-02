@@ -27,6 +27,7 @@ function App() {
     const [show, setShow] = useState(false)
     const [startLookingForSmile, setLookingForSmile] = useState(false)
     const [keepCurrentTrack, setKeepCurrentTrack] = useState(false)
+    const [test, setTest] = useState(false)
 
     useEffect(() => {
         getUserID()
@@ -289,10 +290,16 @@ function App() {
         for (const [key, value] of Object.entries(tempos)) {
             if (Math.round(Number(value)) === closestSong[randomClosestSong]) {
                 console.log("new track to play : " + key)
-                setShow(true)
-                setLookingForSmile(true)
                 setLastTackChangeBPM(bpm)
                 setTrackToPlay(key)
+                setShow(true)
+                setLookingForSmile(true)
+                setTimeout(() => {
+                    console.log("keep "+ keepCurrentTrack)
+                    setShow(false)
+                    setLookingForSmile(false)
+                    setTest(!test)
+                }, 10000)
                 return;
             }
         }
