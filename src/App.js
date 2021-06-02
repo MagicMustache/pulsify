@@ -44,9 +44,10 @@ function App() {
     }, [tempo])
 
     useEffect(() => {
-        if (chosenPlaylist !== "" && !trackToPlay) {
+        if (chosenPlaylist !== "" && trackToPlay === "") {
             chooseCorrectTrack()
         }
+        deltaBpm(bpm)
     }, [bpm])
 
     useEffect(()=>{
@@ -64,7 +65,7 @@ function App() {
                 console.log("current bpm : " + res.data)
                 let currentBpm = parseInt(res.data)
                 setBpm(currentBpm)
-                deltaBpm(currentBpm)
+                //deltaBpm(currentBpm)
             })
         }, 5000)
         return () => clearInterval(interval)
@@ -80,7 +81,7 @@ function App() {
             const handleKeyDown = (event) => {
                 if (event.key === 'Enter') {
                     setBpm(event.target.value)
-                    deltaBpm(event.target.value)
+                    //deltaBpm(event.target.value)
                 }
             }
             return (
@@ -216,8 +217,10 @@ function App() {
     }
 
     function deltaBpm(bpm) {
+        console.log("lastTrackBPM: " + lastTackChangeBPM + "\n bpm: " + bpm)
         if (Math.abs(lastTackChangeBPM - bpm) >= 10) {
             console.log("rule of three")
+            setLastTackChangeBPM(bpm)
             ruleOfThree(bpm)
         }
     }
@@ -287,7 +290,6 @@ function App() {
         for (const [key, value] of Object.entries(tempos)) {
             if (Math.round(Number(value)) === closestSong[randomClosestSong]) {
                 console.log("new track to play : " + key)
-                setLastTackChangeBPM(bpm)
                 if(trackToPlay===key){
                     chooseCorrectTrack()
                 }
