@@ -25,7 +25,7 @@ function Notifications(props) {
                 onClick={handleNotificationOnClick}
                 onClose={handleNotificationOnClose}
                 onError={handleNotificationOnError}
-                timeout={5000}
+                timeout={10000}
                 title={data.title}
                 options={data.options}
             />

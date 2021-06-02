@@ -43,12 +43,18 @@ function App() {
     useEffect(() => {
         if (chosenPlaylist !== "") {
             chooseCorrectTrack()
+            setTimeout(()=>{
+                setShow(false)
+            }, 10000)
         }
     }, [tempo])
 
     useEffect(() => {
         if (chosenPlaylist !== "" && !chooseCorrectTrack()) {
             chooseCorrectTrack()
+            setTimeout(()=>{
+                setShow(false)
+            }, 10000)
         }
     }, [bpm])
 
@@ -289,6 +295,7 @@ function App() {
                 console.log("new track to play : " + key)
                 setLastTackChangeBPM(bpm)
                 setTrackToPlay(key)
+                setShow(true)
                 return;
             }
         }
