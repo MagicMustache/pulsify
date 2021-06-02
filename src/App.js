@@ -16,7 +16,6 @@ function App() {
     const logo = require('./images/logopulsify.png');
     const [userId, setUserId] = useState("")
     const [userPlaylists, setPlaylists] = useState([])
-    const [startCam, setStartCam] = useState(false)
     const [chosenPlaylist, setChosenPlaylist] = useState("")
     const [bpm, setBpm] = useState(75) //75 is our arbitrary average value of bpm (as it goes between 60-100)
     const [tempo, setTempo] = useState(116) //the tempo used to find a song, calculated using bpm -> 116 = average value
@@ -26,12 +25,11 @@ function App() {
     const [volume, setVolume] = useState(50)
     const [fade, setFade] = useState(false)
     const [show, setShow] = useState(false)
+    const [startLookingForSmile, setLookingForSmile] = useState(false)
+    const [keepCurrentTrack, setKeepCurrentTrack] = useState(false)
 
     useEffect(() => {
         getUserID()
-        if (!startCam) {
-            setStartCam(!startCam)
-        }
     }, [])
 
     useEffect(() => {
@@ -43,28 +41,33 @@ function App() {
     useEffect(() => {
         if (chosenPlaylist !== "") {
             chooseCorrectTrack()
-            setTimeout(()=>{
+            setTimeout(() => {
                 setShow(false)
+                setLookingForSmile(false)
             }, 10000)
         }
     }, [tempo])
 
     useEffect(() => {
-        if (chosenPlaylist !== "" && !chooseCorrectTrack()) {
+        if (chosenPlaylist !== "" && !trackToPlay) {
             chooseCorrectTrack()
-            setTimeout(()=>{
+            setTimeout(() => {
                 setShow(false)
+                setLookingForSmile(false)
             }, 10000)
         }
     }, [bpm])
 
-    /*
-    useInterval(() => {
-        if (volume > 0 && fade) {
-            setVolume(volume - 1)
-            console.log("test " + volume)
+    useEffect(()=>{
+        if(!keepCurrentTrack){
+            chooseCorrectTrack()
+            setTimeout(() => {
+                setShow(false)
+                setLookingForSmile(false)
+            }, 10000)
         }
-    }, 100)*/
+    }, [keepCurrentTrack])
+
 
     useEffect(() => {
         const interval = setInterval(() => {
@@ -100,13 +103,12 @@ function App() {
                 </div>
             )
         }
-
         return (
             <div className={"pagesetup background"} style={{}}>
                 <h1 className={"text-center"} style={{marginTop: "10px"}}><img src={logo.default} width={"100"}
                                                                                height={"100"} alt={""}/> Pulsify</h1>
                 <div className={"d-flex flex-column"}>
-                    {startCam ? (<Camera/>) : null}
+                    <Camera lookForSmile={startLookingForSmile} keepSong={keepTheSong}/>
                     <div className={"d-flex d-flex-row justify-content-center"}>
                         <button className={"btn btn-success btnplaylist"} onClick={() => getUserPlaylists()}
                                 data-toggle="modal"
@@ -117,9 +119,6 @@ function App() {
                         <button className={"btn btn-warning btnlogout"} onClick={() => clearCookies()}
                                 style={{marginLeft: "2em"}}>
                             Log out
-                        </button>
-                        <button className={"btn btn-primary"} onClick={() => setShow(!show)}>
-                            {show.toString()}
                         </button>
                     </div>
                     <div className={"d-flex d-flex-column justify-content-center"}>
@@ -194,6 +193,12 @@ function App() {
         )
     }
 
+    function keepTheSong(){
+        if(!keepCurrentTrack){
+            setKeepCurrentTrack(true)
+        }
+    }
+
     function useInterval(callback, delay) {
         const savedCallback = useRef();
 
@@ -223,6 +228,7 @@ function App() {
 
     function deltaBpm(bpm) {
         if (Math.abs(lastTackChangeBPM - bpm) >= 10) {
+            console.log("rule of three")
             ruleOfThree(bpm)
         }
     }
@@ -293,9 +299,10 @@ function App() {
         for (const [key, value] of Object.entries(tempos)) {
             if (Math.round(Number(value)) === closestSong[randomClosestSong]) {
                 console.log("new track to play : " + key)
+                setShow(true)
+                setLookingForSmile(true)
                 setLastTackChangeBPM(bpm)
                 setTrackToPlay(key)
-                setShow(true)
                 return;
             }
         }

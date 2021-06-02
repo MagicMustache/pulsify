@@ -1,18 +1,36 @@
 import * as faceapi from "face-api.js";
 import React, {useEffect, useMemo, useState} from "react";
 import "./Camera.css"
-import IsHappy from "./IsHappy"
 
-function Camera() {
+function Camera(props) {
     const [video, setvideo] = useState()
-    const [emotion, setEmotion] = useState({happy: false, score: 0.0})
     const [loadedModels, setLoadedModels] = useState(false)
 
     useEffect(() => {
         setvideo(document.getElementById("video"))
     }, [video])
 
-    if(!loadedModels){
+    useEffect(() => {
+        if (props.lookForSmile) {
+            let i = 0
+            let interval = setInterval(async () => {
+                if (i === 100) {
+                    clearInterval(interval)
+                }
+                checkEmotion().then((res) => {
+                    if (res) {
+                        console.log("you smiled")
+                        props.keepSong()
+                    }
+                })
+                i += 1
+            }, 100)
+        } else {
+            console.log("00000")
+        }
+    }, [props.lookForSmile])
+
+    if (!loadedModels) {
         if (video != null) {
             Promise.all([
                 faceapi.nets.tinyFaceDetector.loadFromUri('/models'),
@@ -28,34 +46,25 @@ function Camera() {
     }
 
     const renderVideo = useMemo(() => (
-        <center><video id={"video"} width="400" autoPlay muted style={{}}/></center>
+        <center>
+            <video id={"video"} width="400" autoPlay muted style={{}}/>
+        </center>
     ), [])
 
     return (
         <div className="container-fluid">
             {renderVideo}
-            {/*
-            <br/>
-            <button className={"btn btn-primary"} onClick={() => checkEmotion()}>Check Emotion</button>
-            <IsHappy emotion={emotion}/>
-            */}
         </div>
     )
 
-    function checkEmotion() {
-        faceapi.detectSingleFace(video, new faceapi.TinyFaceDetectorOptions()).withFaceLandmarks().withFaceExpressions().then(detections => {
-            if (detections !== undefined) {
-                if (detections.expressions.happy > 0.30) {
-                    if (!emotion.happy) {
-                        setEmotion({happy: true, score: detections.expressions.happy})
-                    }
-                } else {
-                    if (emotion.happy) {
-                        setEmotion({happy: false, score: detections.expressions.happy})
-                    }
-                }
+    async function checkEmotion() {
+        let detections = await faceapi.detectSingleFace(video, new faceapi.TinyFaceDetectorOptions()).withFaceLandmarks().withFaceExpressions()
+        if (detections !== undefined) {
+            if (detections.expressions.happy > 0.30) {
+                return true
             }
-        })
+        }
+        return false
     }
 
     function startVideo() {
